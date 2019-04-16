@@ -41,6 +41,7 @@ public class ReadTreasuremapAction implements ActionPerformer, ModAction {
 
     @Override
     public boolean action(Action action, Creature performer, Item activated, Item target, short num, float counter) {
+        TreasureOptions options = TreasureHunting.getOptions();
         try {
             if (target.getOwnerId() != performer.getWurmId()) {
                 performer.getCommunicator().sendNormalServerMessage("You need to have the map in your inventory.");
@@ -80,6 +81,38 @@ public class ReadTreasuremapAction implements ActionPerformer, ModAction {
                                     "marked spot",
                                     MethodsCreatures.getLocationStringFor(performer.getStatus().getRotation(), direction, "you"),
                                     true));
+                    if (options.isMapTiles()) {
+                        if (distance > 0 && distance < 4) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 1-3 tiles away.");
+                        }
+                        if (distance > 4 && distance < 6) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 4-5 tiles away.");
+                        }
+                        if (distance > 5 && distance < 10) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 6-9 tiles away.");
+                        }
+                        if (distance > 9 && distance < 20) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 10-19 tiles away.");
+                        }
+                        if (distance > 19 && distance < 50) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 20-49 tiles away.");
+                        }
+                        if (distance > 49 && distance < 200) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 50-199 tiles away.");
+                        }
+                        if (distance > 199 && distance < 500) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 200-499 tiles away.");
+                        }
+                        if (distance > 499 && distance < 1000) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 500-999 tiles away.");
+                        }
+                        if (distance > 999 && distance < 2000) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is between 1000-2000 tiles away.");
+                        }
+                        if (distance > 1999) {
+                            performer.getCommunicator().sendNormalServerMessage("The marked spot is 2000+ tiles away. Yikes.");
+                        }
+                    }
 
                     Server.getInstance().broadCastAction(performer.getName() + " folds up a treasure map and looks over yonder.", performer, 5);
 

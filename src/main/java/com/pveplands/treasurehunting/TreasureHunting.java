@@ -65,7 +65,12 @@ public class TreasureHunting implements WurmServerMod, Configurable, Initable, P
                         if(chest != null && chest.isLocked()){
                             Item lock = Items.getItem(chest.getLockId());
                             Server.getInstance().broadCastAction("The treasure's guardians have been defeated and the protection is reduced.", creature, 20);
-                            lock.setQualityLevel(Math.max(1, lock.getQualityLevel()*0.3f));
+                            if(options.isDestroyLock()){
+                                chest.unlock();
+                                chest.setLockId(-10);
+                                Items.destroyItem(lock.getWurmId());
+                             }else{
+                                lock.setQualityLevel(Math.max(1, lock.getQualityLevel()*0.3f));}
                         }
                     } catch (NoSuchItemException e) {
                         e.printStackTrace();

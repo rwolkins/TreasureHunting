@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     compile 'com.intellij:annotations:+@jar'
-    compile 'org.gotti.wurmunlimited:server-modlauncher:0.43-beta1'
+    compile 'org.gotti.wurmunlimited:server-modlauncher:0.43'
     compile 'com.github.Sindusk:sindusklibrary:v2.2'
 
 }

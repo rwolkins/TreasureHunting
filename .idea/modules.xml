@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/TreasureHunting.iml" filepath="$PROJECT_DIR$/.idea/TreasureHunting.iml" />
       <module fileurl="file://$PROJECT_DIR$/TreasureHunting.iml" filepath="$PROJECT_DIR$/TreasureHunting.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/TreasureHunting_main.iml" filepath="$PROJECT_DIR$/.idea/modules/TreasureHunting_main.iml" group="TreasureHunting" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/TreasureHunting_test.iml" filepath="$PROJECT_DIR$/.idea/modules/TreasureHunting_test.iml" group="TreasureHunting" />

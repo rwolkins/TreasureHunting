@@ -16,13 +16,14 @@ public class TreasureOptions {
     
     private boolean extraWarning = false;
     private boolean extraSwirl = false;
-    
+    private boolean mapTiles = false;
     private boolean damageCompass = true;
     private boolean damageMap = true;
     private float damageMultiplier = 100f;
     
     private float lockChance = 100f;
     private float lockMultiplier = 0.25f;
+    private boolean destroyLock = false;
     
     private int creationTries = 1000;
     
@@ -130,7 +131,10 @@ public class TreasureOptions {
         
         setExtraSwirl(Boolean.valueOf(p.getProperty("extraSwirl", String.valueOf(isExtraSwirl()))));
         logger.log(Level.INFO, "Extra swirl: {0}", isExtraSwirl());
-        
+
+        setMapTiles(Boolean.valueOf(p.getProperty("mapTiles", String.valueOf(mapTiles))));
+        logger.log(Level.INFO, "Map tiles: {0}", isMapTiles());
+
         setDamageCompass(Boolean.valueOf(p.getProperty("damageCompass", String.valueOf(isDamageCompass()))));
         logger.log(Level.INFO, "Damage compass: {0}", isDamageCompass());
         
@@ -153,8 +157,9 @@ public class TreasureOptions {
         setLockMultiplier(Math.min(100f, Math.max(0.01f, getLockMultiplier())));
         logger.log(Level.INFO, "Lock quality multiplier: {0}", getLockMultiplier());
 
-        
-        
+        setDestroyLock(Boolean.valueOf(p.getProperty("destroyLock", String.valueOf(destroyLock))));
+        logger.log(Level.INFO, "Destroy lock: {0}", isDestroyLock());
+
         setMapDiggingChance(Integer.valueOf(p.getProperty("mapDiggingChance", String.valueOf(getMapDiggingChance()))));
         setMapDiggingChance(Math.min(2147483647, Math.max(0, getMapDiggingChance())));
         logger.log(Level.INFO, "Map digging chance: {0}", getMapDiggingChance());
@@ -589,6 +594,10 @@ public class TreasureOptions {
         this.extraSwirl = extraSwirl;
     }
 
+    public boolean isMapTiles() {return mapTiles; }
+
+    public void setMapTiles(boolean mapTiles) {this.mapTiles = mapTiles; }
+
     public boolean isDamageCompass() {
         return damageCompass;
     }
@@ -628,6 +637,10 @@ public class TreasureOptions {
     public void setLockMultiplier(float lockMultiplier) {
         this.lockMultiplier = lockMultiplier;
     }
+
+    public boolean isDestroyLock() {return destroyLock; }
+
+    public void setDestroyLock(boolean destroyLock) {this.destroyLock = destroyLock;}
 
     public int getCreationTries() {
         return creationTries;
