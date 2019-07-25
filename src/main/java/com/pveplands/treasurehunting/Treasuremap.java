@@ -102,6 +102,7 @@ public class Treasuremap {
                     int y = chest.getTileY() + (random.nextInt(3) * (random.nextBoolean() ? -1 : 1));
                     String name = String.format("%s ambushing %s", template.getName(), performer.getName());
                     Creature rareSpawn = Creature.doNew(template.getTemplateId(), (x << 2) + 2, (y << 2) + 2, 360f*Server.rand.nextFloat(), 0, name, (byte)0);
+                    rareSpawn.setOpponent(performer);
                     SoundPlayer.playSound(template.getHitSound(rareSpawn.getSex()), x, y, true, 0.3f);
                     weightToSpawn -= weightReduction;
                 }else{
@@ -165,6 +166,7 @@ public class Treasuremap {
                 String name = String.format("%s ambushing %s", template.getName(), performer.getName());
 
                 Creature cret = Creature.doNew(id, true, (x << 2) + 2, (y << 2) + 2, random.nextFloat() * 360f, 0, name, gender, (byte)0, (byte)0, false, (byte)age);
+                cret.setOpponent(performer);
                 guardians.put(cret.getWurmId(), chest.getWurmId());
                 if(guardianCount.containsKey(chest.getWurmId())){
                     guardianCount.put(chest.getWurmId(), guardianCount.get(chest.getWurmId())+1);
@@ -244,6 +246,20 @@ public class Treasuremap {
      * @return NULL if it failed, or an instance of Item, the treasure map.
      */
     public static Item CreateTreasuremap(Creature performer, Item activated, Skill skill, Creature killed) {
+        return CreateTreasuremap(performer, activated, skill, killed, false);
+    }
+
+    /**
+     * Creates a new treasure map when chances are met. The Data1 (DataX, and
+     * DataY) field contains the X, Y tile coordinates of the treasure location.
+     *
+     * @param performer Player or creature performing an action, NULL if killed is given.
+     * @param activated Activated item (e.g. shovel), NULL if killed is given.
+     * @param skill The skill being used (e.g. Digging), NULL if killed is given.
+     * @param killed The creature that died, NULL if performer, activated, and skill are given.
+     * @return NULL if it failed, or an instance of Item, the treasure map.
+     */
+    public static Item CreatePrayTreasuremap(Creature performer, Item activated, Skill skill, Creature killed) {
         return CreateTreasuremap(performer, activated, skill, killed, false);
     }
 
@@ -556,6 +572,8 @@ public class Treasuremap {
     protected static HashMap<Long, Integer> surfaceMiningChances = new HashMap<>();
     protected static HashMap<Long, Integer> woodcuttingChances = new HashMap<>();
     protected static HashMap<Long, Integer> foragingChances = new HashMap<>();
+	protected static HashMap<Long, Integer> investigateChances = new HashMap<>();
+    protected static HashMap<Long, Integer> prayerChances = new HashMap<>();
 
     public static boolean GetPlayerPseudoChance(Creature performer, HashMap<Long, Integer> pseudoMap, int optionChance){
         long wurmid = performer.getWurmId();
@@ -689,6 +707,22 @@ public class Treasuremap {
 
                 if (performer.isPlayer()) {
                     return GetPlayerPseudoChance(performer, foragingChances, options.getMapForagingChance());
+                }
+                return random.nextInt(options.getMapSurfaceMiningChance()) == 0;
+            case SkillList.ARCHAEOLOGY:
+				if (options.getMapInvestigateChance() <= 0)
+                    return false;
+
+                if (performer.isPlayer()) {
+                    return GetPlayerPseudoChance(performer, investigateChances, options.getMapInvestigateChance());
+                }
+                return random.nextInt(options.getMapSurfaceMiningChance()) == 0;
+            case SkillList.PRAYER:
+                if (options.getMapPrayerChance() <= 0)
+                    return false;
+
+                if (performer.isPlayer()) {
+                    return GetPlayerPseudoChance(performer, prayerChances, options.getMapPrayerChance());
                 }
                 return random.nextInt(options.getMapSurfaceMiningChance()) == 0;
             default:

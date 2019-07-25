@@ -8,6 +8,7 @@ import com.wurmonline.server.behaviours.ActionEntry;
 import com.wurmonline.server.creatures.Creature;
 import com.wurmonline.server.items.Item;
 import com.wurmonline.server.items.ItemFactory;
+import com.wurmonline.server.skills.SkillList;
 import com.wurmonline.server.sounds.SoundPlayer;
 import com.wurmonline.server.zones.Zone;
 import com.wurmonline.server.zones.Zones;
@@ -52,10 +53,9 @@ public class DigUpTreasureAction implements ActionPerformer, ModAction {
 
             int x = performer.getTileX(), y = performer.getTileY();
 
-            /*if (performer.isWithinTileDistanceTo(target.getDataX(), target.getDataY(), 0, 1)) {
-                performer.getCommunicator().sendNormalServerMessage("You're too far away.");
-                return true;
-            }*/
+            int xDistance = Math.abs(x - target.getDataX());
+            int yDistance = Math.abs(y - target.getDataY());
+            double distance = Math.sqrt(xDistance * xDistance + yDistance * yDistance);
 
             int tile = Server.surfaceMesh.getTile(x, y);
             int type = Tiles.decodeType(tile);
@@ -70,7 +70,8 @@ public class DigUpTreasureAction implements ActionPerformer, ModAction {
                     return true;
                 }
 
-                int time = (int)Math.max(40, 150 - ((int)activated.getCurrentQualityLevel() / 20 + activated.getRarity()) * 10);
+                int time = (int)Math.max(20, 150 - ((int)activated.getCurrentQualityLevel() / 20 + activated.getRarity()) * 10) - (int)(performer.getSkills().getSkill(SkillList.DIGGING).getKnowledge()/10) - (int)(performer.getSkills().getSkill(SkillList.ARCHAEOLOGY).getKnowledge()/10);
+                performer.getCommunicator().sendNormalServerMessage(String.format("DEBUG: time: %d Dig Skill: %.4f ArchSkill: %.4f Rarity: %d", time, performer.getSkills().getSkill(SkillList.DIGGING).minimum, performer.getSkills().getSkill(SkillList.ARCHAEOLOGY).minimum, activated.getRarity() ));
                 performer.getCurrentAction().setTimeLeft(time);
                 performer.sendActionControl("Digging for treasure", true, time);
                 performer.getCommunicator().sendNormalServerMessage("You start to dig for treasure.");
@@ -80,8 +81,10 @@ public class DigUpTreasureAction implements ActionPerformer, ModAction {
                 int time = performer.getCurrentAction().getTimeLeft();
 
                 if (counter * 10f > time) {
-                    if (x != target.getDataX() || y != target.getDataY()) {
-                        performer.getCommunicator().sendNormalServerMessage("You can't seem to find anything here.");
+                    performer.getCommunicator().sendNormalServerMessage(String.format("DEBUG: distance: %.4f Skill: %.4f Distance Check: %.4f", distance, performer.getSkills().getSkill(SkillList.DIGGING).minimum, performer.getSkills().getSkill(SkillList.DIGGING).minimum / 33));
+                    //if (x != target.getDataX() || y != target.getDataY()) {
+                    if (distance > (performer.getSkills().getSkill(SkillList.DIGGING).getKnowledge() / 33)) {
+                        //performer.getCommunicator().sendNormalServerMessage("You can't seem to find anything here.");
                         Server.getInstance().broadCastAction(performer.getName() + " frowns as no treasure seems to be here.", performer, 5);
                         return true;
                     }
@@ -91,6 +94,8 @@ public class DigUpTreasureAction implements ActionPerformer, ModAction {
                     // Notice
                     performer.getCommunicator().sendNormalServerMessage("You find a treasure chest!");
                     Server.getInstance().broadCastAction(performer.getName() + " digs up a treasure chest!", performer, 5);
+                    performer.getSkills().getSkillOrLearn(SkillList.DIGGING);
+                    performer.getSkills().getSkillOrLearn(SkillList.ARCHAEOLOGY);
 
                     // Damages shovel or pickaxe for players only.
                     if (performer.getPower() == 0)

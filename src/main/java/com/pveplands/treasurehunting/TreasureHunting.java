@@ -65,7 +65,12 @@ public class TreasureHunting implements WurmServerMod, Configurable, Initable, P
                         if(chest != null && chest.isLocked()){
                             Item lock = Items.getItem(chest.getLockId());
                             Server.getInstance().broadCastAction("The treasure's guardians have been defeated and the protection is reduced.", creature, 20);
-                            lock.setQualityLevel(Math.max(1, lock.getQualityLevel()*0.3f));
+                            if(options.isDestroyLock()){
+                                chest.unlock();
+                                chest.setLockId(-10);
+                                Items.destroyItem(lock.getWurmId());
+                            }else{
+                                lock.setQualityLevel(Math.max(1, lock.getQualityLevel()*0.3f));}
                         }
                     } catch (NoSuchItemException e) {
                         e.printStackTrace();
@@ -103,12 +108,14 @@ public class TreasureHunting implements WurmServerMod, Configurable, Initable, P
             e.printStackTrace();
         }
 
-        AddMethodCallsTerraforming();
-        AddMethodCallsMining();
-        AddMethodCallsFishing();
-        AddMethodCallsHunting();
-        AddMethodCallsWoodcutting();
-        AddMethodCallsForaging();
+        if (options.isTerraforming()) AddMethodCallsTerraforming();
+        if (options.isMining()) AddMethodCallsMining();
+        if (options.isFishing()) AddMethodCallsFishing();
+        if (options.isHunting()) AddMethodCallsHunting();
+        if (options.isWoodcutting()) AddMethodCallsWoodcutting();
+        if (options.isForaging()) AddMethodCallsForaging();
+        if (options.isArchaeology()) AddMethodCallsInvestigate();
+        if (options.isPrayer()) AddMethodCallsPrayer();
 
         ModActions.init();
     }
@@ -364,6 +371,40 @@ public class TreasureHunting implements WurmServerMod, Configurable, Initable, P
 
         }catch (Exception e) {
             logger.log(Level.SEVERE, "Can't add method calls to terraforming.", e);
+        }
+    }
+
+    public void AddMethodCallsInvestigate(){
+        try {
+            ClassPool classPool = HookManager.getInstance().getClassPool();
+            Class<TreasureHunting> thisClass = TreasureHunting.class;
+            String replace;
+
+            Util.setReason("Add Investigate hook.");
+            CtClass ctTileBehaviour = classPool.get("com.wurmonline.server.behaviours.TileBehaviour");
+            replace = "$_ = $proceed($$);" +
+                    Treasuremap.class.getName()+".CreateTreasuremap(performer, null, performer.getSkills().getSkillOrLearn(10069), null);";
+            Util.instrumentDeclared(thisClass, ctTileBehaviour, "investigateTile", "createItem", replace);
+
+        }catch (Exception e) {
+            logger.log(Level.SEVERE, "Can't add method calls to terraforming.", e);
+        }
+    }
+
+    public void AddMethodCallsPrayer(){
+        try {
+            ClassPool classPool = HookManager.getInstance().getClassPool();
+            Class<TreasureHunting> thisClass = TreasureHunting.class;
+            String replace;
+
+            Util.setReason("Add Prayer hook.");
+            CtClass ctReligionBehaviour = classPool.get("com.wurmonline.server.behaviours.MethodsReligion");
+            replace = "$_ = $proceed($$);" +
+                    Treasuremap.class.getName()+".CreateTreasuremap(performer, null, performer.getSkills().getSkillOrLearn(10066), null);";
+            Util.instrumentDeclared(thisClass, ctReligionBehaviour, "prayResult", "createItem", replace);
+
+        }catch (Exception e) {
+            logger.log(Level.SEVERE, "Can't add method calls to prayer.", e);
         }
     }
 

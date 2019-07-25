@@ -16,13 +16,24 @@ public class TreasureOptions {
     
     private boolean extraWarning = false;
     private boolean extraSwirl = false;
-    
+    private boolean mapTiles = false;
+
+    private boolean terraforming = true;
+    private boolean mining = true;
+    private boolean fishing = true;
+    private boolean hunting = true;
+    private boolean woodcutting = true;
+    private boolean foraging = true;
+    private boolean archaeology = true;
+    private boolean prayer = true;
+
     private boolean damageCompass = true;
     private boolean damageMap = true;
     private float damageMultiplier = 100f;
     
     private float lockChance = 100f;
     private float lockMultiplier = 0.25f;
+    private boolean destroyLock = false;
     
     private int creationTries = 1000;
     
@@ -34,6 +45,8 @@ public class TreasureOptions {
     private int mapFishingChance = 10000;
     private int mapWoodcuttingChance = 10000;
     private int mapForagingChance = 5000;
+    private int mapInvestigateChance = 5000;
+    private int mapPrayerChance = 10000;
     
     private int maxHeightDiff = 72;
     private double mapBaseDiff = 30d;
@@ -125,11 +138,38 @@ public class TreasureOptions {
          * 0.0015 and a multiplier of 66667 will at most be 100.005, destroying
          * the map when unlucky, for example.
          */
+        setTerraforming(Boolean.valueOf(p.getProperty("Terraforming", String.valueOf(terraforming))));
+        logger.log(Level.INFO, "Terraforming Enabled: {0}", isTerraforming());
+
+        setMining(Boolean.valueOf(p.getProperty("Mining", String.valueOf(mining))));
+        logger.log(Level.INFO, "Mining Enabled: {0}", isMining());
+
+        setFishing(Boolean.valueOf(p.getProperty("Fishing", String.valueOf(fishing))));
+        logger.log(Level.INFO, "Fishing Enabled: {0}", isFishing());
+
+        setHunting(Boolean.valueOf(p.getProperty("Hunting", String.valueOf(hunting))));
+        logger.log(Level.INFO, "Hunting Enabled: {0}", isHunting());
+
+        setWoodcutting(Boolean.valueOf(p.getProperty("Woodcutting", String.valueOf(woodcutting))));
+        logger.log(Level.INFO, "Woodcutting Enabled: {0}", isWoodcutting());
+
+        setForaging(Boolean.valueOf(p.getProperty("Foraging", String.valueOf(foraging))));
+        logger.log(Level.INFO, "Foraging Enabled: {0}", isForaging());
+
+        setArchaeology(Boolean.valueOf(p.getProperty("Archaeology", String.valueOf(archaeology))));
+        logger.log(Level.INFO, "Archaeology Enabled: {0}", isArchaeology());
+
+        setPrayer(Boolean.valueOf(p.getProperty("Praying", String.valueOf(prayer))));
+        logger.log(Level.INFO, "Praying Enabled: {0}", isPrayer());
+
         setExtraWarning(Boolean.valueOf(p.getProperty("extraWarning", String.valueOf(isExtraWarning()))));
         logger.log(Level.INFO, "Extra warning: {0}", isExtraWarning());
         
         setExtraSwirl(Boolean.valueOf(p.getProperty("extraSwirl", String.valueOf(isExtraSwirl()))));
         logger.log(Level.INFO, "Extra swirl: {0}", isExtraSwirl());
+
+        setMapTiles(Boolean.valueOf(p.getProperty("mapTiles", String.valueOf(mapTiles))));
+        logger.log(Level.INFO, "Map tiles: {0}", isMapTiles());
         
         setDamageCompass(Boolean.valueOf(p.getProperty("damageCompass", String.valueOf(isDamageCompass()))));
         logger.log(Level.INFO, "Damage compass: {0}", isDamageCompass());
@@ -153,7 +193,8 @@ public class TreasureOptions {
         setLockMultiplier(Math.min(100f, Math.max(0.01f, getLockMultiplier())));
         logger.log(Level.INFO, "Lock quality multiplier: {0}", getLockMultiplier());
 
-        
+        setDestroyLock(Boolean.valueOf(p.getProperty("destroyLock", String.valueOf(destroyLock))));
+        logger.log(Level.INFO, "Destroy lock: {0}", isDestroyLock());
         
         setMapDiggingChance(Integer.valueOf(p.getProperty("mapDiggingChance", String.valueOf(getMapDiggingChance()))));
         setMapDiggingChance(Math.min(2147483647, Math.max(0, getMapDiggingChance())));
@@ -178,6 +219,14 @@ public class TreasureOptions {
         setMapForagingChance(Integer.valueOf(p.getProperty("mapForagingChance", String.valueOf(getMapForagingChance()))));
         setMapForagingChance(Math.min(2147483647, Math.max(0, getMapForagingChance())));
         logger.log(Level.INFO, "Map foraging chance: {0}", getMapForagingChance());
+
+        setMapInvestigateChance(Integer.valueOf(p.getProperty("mapInvestigateChance", String.valueOf(getMapInvestigateChance()))));
+        setMapInvestigateChance(Math.min(2147483647, Math.max(0, getMapInvestigateChance())));
+        logger.log(Level.INFO, "Map investigate chance: {0}", getMapInvestigateChance());
+
+        setMapPrayerChance(Integer.valueOf(p.getProperty("mapPrayChance", String.valueOf(getMapPrayerChance()))));
+        setMapPrayerChance(Math.min(2147483647, Math.max(0, getMapPrayerChance())));
+        logger.log(Level.INFO, "Map pray chance: {0}", getMapPrayerChance());
 
         setMapHuntingChance(Integer.valueOf(p.getProperty("mapHuntingChance", String.valueOf(getMapHuntingChance()))));
         setMapHuntingChance(Math.min(2147483647, Math.max(0, getMapHuntingChance())));
@@ -589,6 +638,10 @@ public class TreasureOptions {
         this.extraSwirl = extraSwirl;
     }
 
+    public boolean isMapTiles() {return mapTiles; }
+
+    public void setMapTiles(boolean mapTiles) {this.mapTiles = mapTiles; }
+
     public boolean isDamageCompass() {
         return damageCompass;
     }
@@ -628,6 +681,10 @@ public class TreasureOptions {
     public void setLockMultiplier(float lockMultiplier) {
         this.lockMultiplier = lockMultiplier;
     }
+
+    public boolean isDestroyLock() {return destroyLock; }
+
+    public void setDestroyLock(boolean destroyLock) {this.destroyLock = destroyLock;}
 
     public int getCreationTries() {
         return creationTries;
@@ -692,6 +749,61 @@ public class TreasureOptions {
     public void setMapForagingChance(int mapForagingChance) {
         this.mapForagingChance = mapForagingChance;
     }
+
+	public int getMapInvestigateChance() {
+        return mapInvestigateChance;
+    }
+
+    public void setMapInvestigateChance(int mapInvestigateChance) {
+        this.mapInvestigateChance = mapInvestigateChance;
+    }
+
+    public int getMapPrayerChance() {
+        return mapPrayerChance;
+    }
+
+    public void setMapPrayerChance(int mapPrayerChance) {
+        this.mapPrayerChance = mapPrayerChance;
+    }
+
+    public boolean isTerraforming() {return terraforming; }
+
+    public void setTerraforming(boolean terraforming) {this.terraforming = terraforming; }
+
+    public boolean isMining() {return mining; }
+
+    public void setMining(boolean mining) {this.mining = mining; }
+
+    public boolean isFishing() {return fishing; }
+
+    public void setFishing(boolean fishing) {this.fishing = fishing; }
+
+    public boolean isHunting() {return hunting; }
+
+    public void setHunting(boolean hunting) {this.hunting = hunting; }
+
+    public boolean isWoodcutting() {return woodcutting; }
+
+    public void setWoodcutting(boolean woodcutting) {this.woodcutting = woodcutting; }
+
+    public boolean isForaging() {return foraging; }
+
+    public void setForaging(boolean foraging) {this.foraging = foraging; }
+
+    public boolean isArchaeology() {return archaeology; }
+
+    public void setArchaeology(boolean archaeology) {this.archaeology = archaeology; }
+
+    public boolean isPrayer() {return prayer; }
+
+    public void setPrayer(boolean prayer) {this.prayer = prayer; }
+    //public boolean getLogMapDrops() {
+    //    return logMapDrops;
+    //}
+
+    //public void setLogMapDrops(boolean logMapDrops) {
+    //    this.logMapDrops = logMapDrops;
+    //}
 
     public int getMaxHeightDiff() {
         return maxHeightDiff;
